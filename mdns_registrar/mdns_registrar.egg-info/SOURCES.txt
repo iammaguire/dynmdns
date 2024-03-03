@@ -1,0 +1,6 @@
+setup.py
+mdns_registrar.egg-info/PKG-INFO
+mdns_registrar.egg-info/SOURCES.txt
+mdns_registrar.egg-info/dependency_links.txt
+mdns_registrar.egg-info/requires.txt
+mdns_registrar.egg-info/top_level.txt

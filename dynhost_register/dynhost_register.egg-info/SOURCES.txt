@@ -1,0 +1,8 @@
+setup.py
+dynhost_register/__init__.py
+dynhost_register/app_register_client.py
+dynhost_register.egg-info/PKG-INFO
+dynhost_register.egg-info/SOURCES.txt
+dynhost_register.egg-info/dependency_links.txt
+dynhost_register.egg-info/requires.txt
+dynhost_register.egg-info/top_level.txt
