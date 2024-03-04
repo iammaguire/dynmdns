@@ -1,0 +1,5 @@
+FROM python:3.9-slim
+
+# Copy and install the mdns_registrar package
+COPY ../mdns_registrar /tmp/mdns_registrar
+RUN pip install --no-cache-dir /tmp/mdns_registrar
