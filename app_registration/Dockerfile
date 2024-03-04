@@ -1,14 +1,23 @@
 FROM tdmx/base:latest
+
 USER root
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libc6-dev libsystemd-dev && \
+    apt-get install -y --no-install-recommends gcc libc6-dev libsystemd-dev python3-venv && \
     rm -rf /var/lib/apt/lists/*
-USER appuser
+
 WORKDIR /app
 COPY . /app
-RUN pip install --no-cache-dir --user -r requirements.txt
-USER root
-RUN apt-get purge -y --auto-remove gcc libc6-dev
+RUN chown -R appuser:appuser /app
+
 USER appuser
+
+# Setup virtual environment
+RUN python3 -m venv venv
+ENV PATH="/app/venv/bin:$PATH"
+
+# Install dependencies
+COPY requirements.txt /app/
+
+RUN pip install --no-cache-dir -r requirements.txt
 
 CMD ["python", "app_registration.py"]

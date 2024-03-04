@@ -31,7 +31,7 @@ class AppRegistrationClient:
             struct.pack('256s', ifname[:15].encode('utf-8'))
         )[20:24])
 
-    def register_app(self, app_name, address=None, port=None, ifname="wlan0"):
+    def register_app(self, app_name, address=None, port=None, ifname="eth0"):
         #if not port:
         #    port = int(self.get_my_process_port())
 

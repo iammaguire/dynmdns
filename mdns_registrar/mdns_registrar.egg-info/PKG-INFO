@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: mdns-registrar
-Version: 0.1.0
-Summary: A simple library for managing mDNS records
-Home-page: https://github.com/iammaguire/dynmdns/mdns_registrar
-Author: maggy
-Author-email: your-email@example.com

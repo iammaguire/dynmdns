@@ -1,17 +1,13 @@
 import os
 import sys
 import logging
-from mdns_registrar import MdnsService
+from mdns_registrar.mdns_registrar import MdnsService
 from flask import Flask, request, jsonify
+#from systemd.journal import JournalHandler
 
-# Import specifically what you need from libraries
-from systemd.journal import JournalHandler
-
-# Configurations and Constants
 HOST = '0.0.0.0'
 PORT = 8000
 
-# Initial Setup
 app = Flask(__name__)
 mdns = MdnsService()
 
@@ -19,9 +15,9 @@ def configure_logging():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     
-    logger.addHandler(JournalHandler())
+    #logger.addHandler(JournalHandler())
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(logging.INFO)
     logger.addHandler(console_handler)
     
     werkzeug_logger = logging.getLogger('werkzeug')

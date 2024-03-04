@@ -1,17 +1,17 @@
-from mdns_registrar import MdnsService
+from mdns_registrar.mdns_registrar import MdnsService
 import netifaces
 import logging
-from systemd.journal import JournalHandler
+#from systemd.journal import JournalHandler
 import sys
 
 # Set up logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.addHandler(JournalHandler())
+#logger.addHandler(JournalHandler())
 
 # Log to console as well
-# console_handler = logging.StreamHandler(sys.stdout)
-# logger.addHandler(console_handler)
+console_handler = logging.StreamHandler(sys.stdout)
+logger.addHandler(console_handler)
 
 DEFAULT_INTERFACE='wlan0'
 

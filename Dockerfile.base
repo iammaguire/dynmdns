@@ -4,20 +4,30 @@ FROM python:3.9-slim
 RUN groupadd -g 999 appuser && \
     useradd -r -u 999 -g appuser appuser
 
-# Set the working directory
 WORKDIR /app
 
-# Change ownership of the /app directory and its contents to the appuser
-RUN chown -R appuser:appuser /app
-RUN mkdir /home/appuser
-RUN chown -R appuser:appuser /home/appuser
-# Copy with appropriate ownership
+RUN python3 -m venv /venv
+
+# Upgrade pip and install common dependencies
+RUN . /venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install wheel && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends gcc libc6-dev libsystemd-dev
+
+# Assuming these folders are properly structured with a setup.py or similar
 COPY --chown=appuser:appuser ./mdns_registrar /app/mdns_registrar
 COPY --chown=appuser:appuser ./dynhost_register /app/dynhost_register
-# Use the non-root user to run commands
+
+# Install your common packages inside the venv
+RUN . /venv/bin/activate && \
+    pip install /app/mdns_registrar && \
+    pip install /app/dynhost_register
+
+# Change ownership of the entire /venv directory to appuser
+RUN chown -R appuser:appuser /venv
+
 USER appuser
-ENV PATH=/home/appuser/.local/bin:$PATH
-RUN python -m pip install --user --upgrade pip
-RUN sleep .1
-RUN pip install --no-cache-dir --user /app/mdns_registrar
-RUN pip install --no-cache-dir --user /app/dynhost_register
+
+# Keeps container running and showcases the shared venv
+CMD ["tail", "-f", "/dev/null"]
