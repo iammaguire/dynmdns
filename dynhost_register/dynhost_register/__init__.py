@@ -32,8 +32,8 @@ class AppRegistrationClient:
         )[20:24])
 
     def register_app(self, app_name, address=None, port=None, ifname="wlan0"):
-        if not port:
-            port = int(self.get_my_process_port())
+        #if not port:
+        #    port = int(self.get_my_process_port())
 
         if not port:
             error_msg = f"Failed to register app {app_name}. Could not find a port associated with the app's process."

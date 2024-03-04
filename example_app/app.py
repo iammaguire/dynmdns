@@ -10,7 +10,7 @@ app = Flask(__name__)
 def register_app(app_name): 
     time.sleep(5) # Wait for server to start
     client = AppRegistrationClient()
-    response = client.register_app(app_name)
+    response = client.register_app(app_name, port=5000, ifname='eth0')
 
     if response['status'] == 'success':
         app.logger.info(response['message'])

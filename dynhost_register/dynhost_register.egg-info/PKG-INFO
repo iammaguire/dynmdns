@@ -1,6 +1,4 @@
 Metadata-Version: 2.1
-Name: dynhost_register
+Name: dynhost-register
 Version: 0.0.1
 Summary: Client for app registration service
-Requires-Dist: requests
-Requires-Dist: psutil
