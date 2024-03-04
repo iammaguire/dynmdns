@@ -1,5 +1,23 @@
 FROM python:3.9-slim
 
-# Copy and install the mdns_registrar package
-COPY ../mdns_registrar /tmp/mdns_registrar
-RUN pip install --no-cache-dir /tmp/mdns_registrar
+# Create a non-root user
+RUN groupadd -g 999 appuser && \
+    useradd -r -u 999 -g appuser appuser
+
+# Set the working directory
+WORKDIR /app
+
+# Change ownership of the /app directory and its contents to the appuser
+RUN chown -R appuser:appuser /app
+RUN mkdir /home/appuser
+RUN chown -R appuser:appuser /home/appuser
+# Copy with appropriate ownership
+COPY --chown=appuser:appuser ./mdns_registrar /app/mdns_registrar
+COPY --chown=appuser:appuser ./dynhost_register /app/dynhost_register
+# Use the non-root user to run commands
+USER appuser
+ENV PATH=/home/appuser/.local/bin:$PATH
+RUN python -m pip install --user --upgrade pip
+RUN sleep .1
+RUN pip install --no-cache-dir --user /app/mdns_registrar
+RUN pip install --no-cache-dir --user /app/dynhost_register

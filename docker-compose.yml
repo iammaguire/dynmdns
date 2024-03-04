@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mdns_broadcaster:
+    build:
+      context: ./mdns_broadcaster
+      dockerfile: Dockerfile
+
+  app_registration:
+    build:
+      context: ./app_registration
+      dockerfile: Dockerfile
+    depends_on:
+      - mdns_broadcaster
+  
+  example_app:
+    build:
+      context: ./example_app
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - app_registration

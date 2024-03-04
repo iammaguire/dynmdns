@@ -1,7 +1,14 @@
-FROM python:3.9-slim
+FROM tdmx/base:latest
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc libc6-dev libsystemd-dev && \
+    rm -rf /var/lib/apt/lists/*
+USER appuser
 WORKDIR /app
-COPY . /app/app_registration
-COPY ../mdns_registrar /app/mdns_registrar
-RUN pip install --no-cache-dir ./mdns_registrar
-RUN pip install --no-cache-dir -r requirements.txt
-CMD ["python", "./app_registration.py"]
+COPY . /app
+RUN pip install --no-cache-dir --user -r requirements.txt
+USER root
+RUN apt-get purge -y --auto-remove gcc libc6-dev
+USER appuser
+
+CMD ["python", "app_registration.py"]

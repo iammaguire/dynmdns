@@ -4,5 +4,5 @@ setup(
     version='0.0.1',
     description='Client for app registration service',
     packages=['dynhost_register'],
-    install_requires=['requests']
+    install_requires=['requests', 'psutil']
 )
