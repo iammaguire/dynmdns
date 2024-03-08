@@ -1,13 +1,20 @@
 version: '3.8'
 
 services:
+  base-image:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: tdmx/base:latest
+
   mdns_broadcaster:
     build:
       context: ./mdns_broadcaster
       dockerfile: Dockerfile
     network_mode: "host"
     depends_on:
-      - nginx 
+      - nginx  
+      - base-image
 
   app_registration:
     build:
@@ -17,21 +24,20 @@ services:
     depends_on:
       - mdns_broadcaster
       - nginx 
+      - base-image
       
   example_app:
     build:
       context: ./example_app
       dockerfile: Dockerfile
     network_mode: "host"
-    # Since host mode is used, ports mapping is not required nor effective.
     depends_on:
       - app_registration
-      - nginx
+      - nginx 
+      - base-image
 
   nginx:
     image: nginx:alpine
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     network_mode: "host"
-    # With host network mode, Nginx will bind directly to the host's port, 
-    # so the ports section can be removed as it doesn't apply.
