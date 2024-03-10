@@ -1,0 +1,30 @@
+FROM python:3.9-alpine
+
+# Create a non-root user
+RUN addgroup -S appuser --gid 991 && \
+    adduser --system --uid 991 --ingroup appuser appuser
+
+WORKDIR /app
+
+# Note: Alpine uses musl libc instead of glibc and busybox instead of systemd, and package names can differ
+# gcc, musl-dev (alternative to libc6-dev), and there is no direct equivalent to libsystemd-dev on Alpine
+RUN python3 -m venv /venv \
+    && apk add --no-cache gcc musl-dev \
+    && . /venv/bin/activate \
+    && pip install --upgrade pip \
+    && pip install wheel
+
+# Assuming these folders are properly structured with a setup.py or similar
+COPY --chown=appuser:appuser ./mdns_registrar /app/mdns_registrar
+COPY --chown=appuser:appuser ./dynhost_register /app/dynhost_register
+
+# Install common packages inside the venv
+RUN . /venv/bin/activate && \
+    pip install /app/mdns_registrar && \
+    pip install /app/dynhost_register && \
+    chown -R appuser:appuser /venv
+
+USER appuser
+
+# Keeps container running and showcases the shared venv
+CMD ["tail", "-f", "/dev/null"]
