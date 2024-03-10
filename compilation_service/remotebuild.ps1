@@ -3,29 +3,46 @@ $codebasePath = "F:\remcomp\codebase"
 $buildPath = "F:\remcomp\build"
 $outputPath = "F:\remcomp\output"
 $tarFilePath = Join-Path -Path $codebasePath -ChildPath "codebase.tar"
+$registryHost = "localhost"
+$registryPort = "5000"
 
 if (Test-Path -Path $tarFilePath) {
+    Write-Host "Found tar archive at $tarFilePath, proceeding with extraction."
     New-Item -ItemType Directory -Force -Path $buildPath
     tar -xvf $tarFilePath -C $buildPath
+    Write-Host "Extraction complete."
     Remove-Item -Path $tarFilePath -Force
+    Write-Host "Removed tar archive."
+    
     Set-Location -Path $buildPath
+    Write-Host "Set working directory to $buildPath."
+    
+    Write-Host "Starting build process using docker-compose."
     docker-compose -f "$buildPath\docker-compose.yml" -p $projectName build
-    $serviceNames = docker-compose -f "$buildPath\docker-compose.yml" config --services
+    
+    Write-Host "Retrieving service names from the docker-compose configuration."
+    $serviceNames = & docker-compose -f "$buildPath\docker-compose.yml" config --services 2>&1
+    
     foreach ($service in $serviceNames) {
-        $projectName = [IO.Path]::GetFileName($buildPath).ToLower() 
-        $imageName = "${projectName}-${service}"
+        $projectNameLower = $projectName.ToLower() 
+        $imageName = "${registryHost}:${registryPort}/${projectNameLower}-${service}"
         
-        $exactImageNameWithTag = docker images --format "{{.Repository}}:{{.Tag}}" | Where-Object { $_ -like "$imageName*" } | Select-Object -First 1
+        $builtImageName = "${projectNameLower}-${service}"
+        
+        Write-Host "Tagging built image $builtImageName as $imageName."
+        docker tag $builtImageName $imageName
+        
+        Write-Host "Pushing $imageName to registry."
+        docker push $imageName
 
-        if ($null -ne $exactImageNameWithTag) {
-            $tarOutputPath = Join-Path -Path $outputPath -ChildPath "$service.tar"
-            docker save -o $tarOutputPath $exactImageNameWithTag
-            Write-Output "Exported $exactImageNameWithTag to $tarOutputPath"
+        if ($?) {
+            Write-Host "Pushed $imageName to registry successfully."
         }
         else {
-            Write-Warning "Image for service '$service' not found. Skipping..."
+            Write-Error "Failed to push image for service '$service'."
         }
     }
 
-    echo '' > "$outputPath\done.txt"
+    Write-Host "Marking process completion."
+    "" > "$outputPath\done.txt"
 }
